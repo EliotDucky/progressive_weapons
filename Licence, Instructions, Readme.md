@@ -46,3 +46,4 @@ stringtable,gamedata/weapons/prog_kills.csv
 
 ## Further development to come:
 - Easier control over which keybinds are used for scrolling
+- Perk hintstrings without mapname.gsc setup of perks
