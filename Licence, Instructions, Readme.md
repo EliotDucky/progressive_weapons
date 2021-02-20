@@ -10,7 +10,7 @@
 - Any file references can either be shared between maps/mods, or map specific
 - Add the script(s) [GSC/CSC/GSH] to `scripts/zm/progressive_weapons`
 - move the contents of `template_gamedata` to `gamedata`
-- If using dog rounds, this requires the modification of the stock `_zm_ai_dogs` script to track kills on dogs, (install here)[]
+- If using dog rounds, this requires the modification of the stock `_zm_ai_dogs` script to track kills on dogs, (install here)[ https://github.com/EliotDucky/zm_ai_dogs ]
 
 
 ## Game Setup:
