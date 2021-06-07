@@ -1,15 +1,16 @@
-#using scripts\zm\_zm_weapons;
-#using scripts\zm\_zm_score;
-#using scripts\zm\_zm_audio;
-#using scripts\zm\_zm_utility;
 #using scripts\codescripts\struct;
 #using scripts\shared\system_shared;
 #using scripts\shared\array_shared;
 #using scripts\shared\flag_shared;
+
 #using scripts\zm\_zm_spawner;
 #using scripts\zm\_zm_ai_dogs;
 #using scripts\zm\_zm_score;
 #using scripts\zm\_zm_perks;
+#using scripts\zm\_zm_weapons;
+#using scripts\zm\_zm_score;
+#using scripts\zm\_zm_audio;
+#using scripts\zm\_zm_utility;
 
 #insert scripts\shared\shared.gsh;
 
@@ -44,9 +45,8 @@ function startup(){
 	//Setup of actual structs
 	for(i=0; i<weapon_names.size; i++){
 		wpn = SpawnStruct();
-		wpn.tier = -1; //CHANGE THIS BACK TO -1
+		wpn.tier = -1;
 		wpn.max_tier = weapon_names[i].size-1;
-		//wpn.tier = wpn.max_tier-1; //FOR TESTING ONLY
 		wpn.names = [];
 		wpn.names = weapon_names[i];
 		wpn.loc = i;
@@ -103,7 +103,6 @@ function trackProgWpnKills(player){
 				level.prog_weapons[i].kills_rem--;
 				IPrintLnBold(level.prog_weapons[i].kills_rem);
 				if(wpn_struct.kills_rem <= 0){
-					//PLAY UPGRADE SOUND
 					wpn_struct nextTier();
 				}
 			}
@@ -115,6 +114,9 @@ function trackProgWpnKills(player){
 function nextTier(){
 	self.tier++;
 	if(self.tier < self.max_tier){
+		//play tier up sound
+		level thread zm_utility::really_play_2D_sound("prog_wpn_tier_up");
+
 		self.kills_rem = Int(self.kills_req[self.tier]);
 		wpn_cost = zm_weapons::get_weapon_cost(self.weapons[self.tier]);
 		ammo_cost = zm_weapons::get_ammo_cost(self.weapons[self.tier]);
@@ -140,6 +142,9 @@ function nextTier(){
 		//self.trig SetCursorHint("HINT_WEAPON", self.weapons[self.tier]);
 		self thread progWaitForBuy(wpn_cost, ammo_cost, up_ammo_cost);
 	}else if(self.tier == self.max_tier){
+		//play max tier sound
+		level thread zm_utility::really_play_2D_sound("prog_wpn_max_tier");
+
 		prk_name = level.prog_perk_names[self.perk];
 		hs1 = "Press ^3[{+activate}]^7 for ^5" + prk_name + "^7 \n ";
 		self.trig SetHintString(hs1);
