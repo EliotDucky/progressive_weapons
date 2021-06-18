@@ -115,7 +115,10 @@ function nextTier(){
 	self.tier++;
 	if(self.tier < self.max_tier){
 		//play tier up sound
-		level thread zm_utility::really_play_2D_sound("prog_wpn_tier_up");
+		if(self.tier != 0){
+			level thread zm_utility::really_play_2D_sound("prog_wpn_tier_up");
+		}
+		
 
 		self.kills_rem = Int(self.kills_req[self.tier]);
 		wpn_cost = zm_weapons::get_weapon_cost(self.weapons[self.tier]);
