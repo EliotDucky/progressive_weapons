@@ -11,7 +11,7 @@ This section will describe this script's application to Celerium, a zombies leve
 - However, Celerium's wallbuys have tiers of weapons to progress through. Tiers are advanced by getting kills with the current weapon at a wallbuy. Once all tiers on a wallbuy have been progressed through, a bonus perk-a-cola is unlocked for free.
 - The perk that becomes unlocked at this wallbuy is shown at the trigger so that the player knows what they're working towards.
 
-![Tier 1 on a Progressive Wallbuy, showing Deadshot as the reward perk](https://github.com/EliotDucky/progressive_weapons/blob/main/Tier1.png)
+![Tier 1 on a Progressive Wallbuy, showing Deadshot as the reward perk](https://github.com/EliotDucky/progressive_weapons/blob/main/readme_images/Tier1.png)
 
 - The hintstring presented to the player when approaching the wallbuy has three lines.
  - The top line describes the weapon available, with the standard highlighting of the activate key or gamepad button, and the weapon name highlighted in blue for clarity amongst the quantity of information shown. The weapon cost is highlighted in red as are the costs on the other lines. Once the player becomes familiar with this top line, the colours aid the quick digestion of this info: Button, Weapon Name, Cost.
