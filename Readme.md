@@ -61,6 +61,7 @@ _name = self.weapons[self.tier].displayname;
 _name = MakeLocalizedString(_name);
 ```
 
+- The localisation function obtains the display name for the weapon depending on the player's language.
 - In case one or more of these are not defined for the weapon elsewhere in the map's setup - for example if a level is being rapidly prototyped - defaults are set before these values are read in the hintstring.
 
 ```c
@@ -76,10 +77,131 @@ if(!isdefined(_name))
  _name = "Misc.";
 ```
 
+![Getting kills with a progressive wallbuy weapon in Celerium](https://github.com/EliotDucky/progressive_weapons/blob/main/readme_images/Kills.png)
+
 - To track the weapon kills, a function tracking this is added to callbacks for the zombies and dogs encountered as the AI enemies in Celerium. The dog AI script does not natively support death event callbacks in Black Ops III, so the zombie callback was used as a template to add this additional functionality to [`zm_ai_dogs`](https://github.com/EliotDucky/zm_ai_dogs).
 
+```c
+//Called On: Dead Enemy
+function trackProgWpnKills(player){
+	if(isdefined(self)){
+		for(i=0; i<level.prog_weapons.size; i++){
+			wpn_struct = level.prog_weapons[i];
+			wpn = wpn_struct.weapons[wpn_struct.tier];
+			dmg_wpn = self.damageWeapon;
+			if(self.damageWeapon.inventorytype == "dwlefthand"){
+                dmg_wpn = dmg_wpn.dualWieldWeapon;
+			}
 
+			counts = zm_weapons::get_base_weapon(dmg_wpn) === wpn;
+			if(counts){
+				level.prog_weapons[i].kills_rem--;
+				IPrintLnBold(level.prog_weapons[i].kills_rem);
+				if(wpn_struct.kills_rem <= 0){
+					wpn_struct nextTier();
+				}
+			}
+		}
+	}
+}
+```
 
+- The callback function checks the weapon used to kill the enemy against the weapon at the current tier on each of the progressive weapons wallbuys. This includes special handling for if it was a left hand weapon used as part of a dual wield and gets the base weapon in case an upgraded variant is used.
+- The weapons that are progressed through and the kills required per weapon per wallbuy are defined in CSV files as described in the Game Setup Section below.
+- Once enough kills with a weapon have been achieved, by one player or a combination of all, the hintstring progresses to the next weapon's information.
+
+![A later tier on the same wallbuy](https://github.com/EliotDucky/progressive_weapons/blob/main/readme_images/Tier.png)
+
+- Once all tiers are complete for a progressive wallbuy location, a perk-a-cola is unlocked that can be drank at any time provided that the player doesn't already have it.
+- In Celerium, there a four perk-a-cola machines placed throughout the level. The perks available at the progressive wallbuys are specifically selected due to being auxiliary perks that a player is unlikely to purchase in place of a core perk or are too powerful to be unlocked at early rounds, such as Double Tap II.
+- Notice how the wallbuy was started on round one and completely on round nine, and that's with focusing entirely on progressing that one single wallbuy. The progression time will vary with number of players and how many other utilities the player has to purchase instead of buying the next tier of weapon.
+
+![Deadshot Daiquiri available at the wallbuy after completing all tiers](https://github.com/EliotDucky/progressive_weapons/blob/main/readme_images/PerkUnlocked.png)
+
+- The third line of the hintstring is then changed from the kills required to progress to the next tier to the buttons to press to scroll through the weapons available. This allows the player to scroll back to any weapon if ammo is required or they want to repurchase it.
+ - Like the activate button, the text changes to Dpad icons for controllers (Inventory Slot Up and Inventory Slot Down)
+- Unlike before completing the wallbuy, the hintstring now updates independently for each player, depending on which weapon they scroll to.
+
+![Scroll icons added to the completed wallbuy](https://github.com/EliotDucky/progressive_weapons/blob/main/readme_images/Scrolling.png)
+
+- This is simply handled by modulo operations on the tier the player has the wallbuy hintstring showing.
+- Modulo operations do not work on negative numbers however, so if the `prog_index` (`player.prog_indecies[self.loc]`) becomes negative after subtracting, it simply loops back to the index of the max tier - the perk reward.
+
+```c
+//Call On: level.prog_weapons[i] Struct
+function checkActionSlots(player){
+	if(player ActionSlotOneButtonPressed()){
+		player.prog_indices[self.loc] ++;
+		player.prog_indices[self.loc] %= (self.max_tier+1);
+		self updatePlayerHintStr(player);
+		wait(0.20);
+	}else if(player ActionSlotTwoButtonPressed()){
+		//player.prog_indices[self.loc] %= (self.max_tier+1);
+		player.prog_indices[self.loc] --;
+		if(player.prog_indices[self.loc] < 0){
+			player.prog_indices[self.loc] = self.max_tier;
+		}
+		self updatePlayerHintStr(player);
+		wait(0.20);
+	}
+}
+```
+
+- It is worth highlighting the complexity of checking whether a player can purchase the weapon or ammo at that time, as there's more to it than just whether the player has the points.
+ - Firstly, it must be determined what the player is trying to purchase: the weapon itself, ammo, or upgraded ammo if they have the upgrade of the weapon.
+  - This determines which function needs to be called to give the player what they want `give_func`. The cost requirement changes depending on which `give_func` is to be ran. Multiple checks and function calls could exist but can complicate logical error tracing so are just stored by reference and ran at the end of the code block to give only one cost check and function exit point.
+ - Whether the player can buy it depends on what they're also doing at the same time, whether a perk is being drank, they're reviving someone, and doesn't have a deployable weapon out. This is handled in the `canBuy(cost)` function.
+ - Communicating to the player whether this has recorded their input is important and so is following the standard for purchased utilites. The `denyPurchase(purchase_loc_)` function plays sound effects and voice over - using the universal system such that any character setup for any level will still work.
+
+```c
+function wpnBuyHandling(_wpn, p, cost, cost_ammo, cost_up_ammo){
+	if(p zm_weapons::has_weapon_or_upgrade(_wpn)){
+		to_charge = cost_ammo;
+		give_func = &zm_weapons::ammo_give;
+		if(p zm_weapons::has_upgrade(_wpn)){
+			to_charge = cost_up_ammo;
+			_wpn = zm_weapons::get_upgrade_weapon(_wpn);
+		}
+	}else{
+			to_charge = cost;
+			give_func = &zm_weapons::weapon_give;
+			_vox = undefined;
+		}
+	if(p canBuy(to_charge)){
+		p zm_score::minus_to_player_score(to_charge);
+		zm_utility::play_sound_at_pos("purchase", self.trig.origin);
+		if(isdefined(give_func)){
+			p [[give_func]](_wpn);
+		}
+
+		wait(0.5);
+	}else{
+		p denyPurchase(self.trig.origin);
+	}
+}
+
+//Call On: Player
+function canBuy(cost){
+	can_buy = self UseButtonPressed() && !self zm_utility::in_revive_trigger() && !(self.is_drinking);
+	can_buy &= zm_utility::is_player_valid(self) && self zm_score::can_player_purchase(cost);
+	can_buy &= !(isdefined(self.intermission) && self.intermission) && !self IsThrowingGrenade() && !self zm_utility::is_placeable_mine(self GetCurrentWeapon());
+	
+	return can_buy;
+}
+
+//Call On: Player
+function denyPurchase(purchase_loc){
+	zm_utility::play_sound_at_pos("no_purchase", purchase_loc);
+	if ( isdefined( level.custom_generic_deny_vo_func ) )
+	{
+		self [[level.custom_generic_deny_vo_func]]();
+	}
+	else
+	{
+		self zm_audio::create_and_play_dialog( "general", "outofmoney" );
+	}
+}
+```
 
 ## Installation:
 - Any file references can either be shared between maps/mods, or map specific
@@ -108,6 +230,8 @@ if(!isdefined(_name))
   - For each perk which can be obtained from a progressive wallbuy, add the function call:
     `prog_weapons::addPerkName(code_name, display_name);`
     - for example: `prog_weapons::addPerkName("specialty_deadshot", "Deadshot Daiquiri");`
+
+
 - mapname.zone:
 ```php
 //Progressive Wallbuys
