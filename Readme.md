@@ -1,8 +1,3 @@
-## Usage Licence:
-
- - The package of content, primarily including the script(s) [GSC/CSC/GSH], is the intellectual property of EliotDucky. It is limited to use for reference only therefore may not be included in a map or mod without permission; and may not be redistributed with or without modification.
- - This licence has potential to change following the release of my map containing this feature. Follow for updates.
-
 ## How it works:
 This section will describe this script's application to Celerium, a zombies level in development myself, that has progressive wallbuy weapons as a core feature.
 
@@ -241,6 +236,11 @@ stringtable,gamedata/weapons/zm/zm_levelcommon_weapons.csv
 stringtable,gamedata/weapons/prog_wallbuys.csv
 stringtable,gamedata/weapons/prog_kills.csv
 ```
+
+## Usage Licence:
+
+ - The package of content, primarily including the script(s) [GSC/CSC/GSH], is the intellectual property of EliotDucky. It is limited to use for reference only therefore may not be included in a map or mod without permission; and may not be redistributed with or without modification.
+ - This licence has potential to change following the release of my map containing this feature. Follow for updates.
 
 ## Further development to come:
 - Easier control over which keybinds are used for scrolling
