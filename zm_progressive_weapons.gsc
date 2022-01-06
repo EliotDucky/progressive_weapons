@@ -94,11 +94,8 @@ function trackProgWpnKills(player){
 			}
 
 			counts = zm_weapons::get_base_weapon(dmg_wpn) === wpn;
-			/*
-			if(!counts && zm_weapons::is_weapon_upgraded(self.damageWeapon)){
-				counts = wpn === zm_weapons::get_base_weapon(self.damageWeapon);
-			}
-			*/
+			//upgrade manually added for when not called wpn_upgraded, i.e. Bloodhound+
+			counts |= zm_weapons::get_upgrade_weapon(wpn) === dmg_wpn;
 			if(counts){
 				level.prog_weapons[i].kills_rem--;
 				IPrintLnBold(level.prog_weapons[i].kills_rem);
@@ -181,33 +178,6 @@ function progWaitForBuy(cost, cost_ammo, cost_up_ammo){
 		}
 
 		self wpnBuyHandling(_wpn, p, cost, cost_ammo, cost_up_ammo);
-		/*
-		if(p zm_weapons::has_weapon_or_upgrade(_wpn)){
-			to_charge = cost_ammo;
-			give_func = &zm_weapons::ammo_give;
-			if(p zm_weapons::has_upgrade(_wpn)){
-				to_charge = cost_up_ammo;
-				//ADD UPGRADED
-			}
-		}else{
-			to_charge = cost;
-			give_func = &zm_weapons::weapon_give;
-			_vox = undefined; //ASK CONNOR - both for player character and demonic announcer
-		}
-		if(p canBuy(to_charge)){
-			p zm_score::minus_to_player_score(to_charge);
-			zm_utility::play_sound_at_pos("purchase", self.trig.origin);
-			if(isdefined(give_func)){
-				p [[give_func]](_wpn);
-			}
-
-			wait(0.5);
-			//DO VOX
-		}else{
-			p denyPurchase(self.trig.origin);
-			//PLAY character point shortage vox & announcer deny
-		}
-		*/
 	}
 }
 
@@ -316,43 +286,6 @@ function scrollBuyAttempt(){
 			ammo_cost = zm_weapons::get_ammo_cost(self.weapons[plr_tier]);
 			up_ammo_cost =  zm_weapons::get_upgraded_ammo_cost(self.weapons[plr_tier]);
 			wpnBuyHandling(wpn_to_buy, player, wpn_cost, ammo_cost, up_ammo_cost);
-			/*
-			//this is less efficient but it works - less risky
-			//if the player has this wpn, try to charge them for ammo/upgraded ammo
-			if(player zm_weapons::has_weapon_or_upgrade(wpn_to_buy)){
-				if(zm_weapons::has_upgrade(wpn_to_buy)){
-					//charge for upgrade ammo
-					cost = zm_weapons::get_upgraded_ammo_cost(wpn_to_buy);
-					if(canBuy(cost)){
-						player zm_score::minus_to_player_score(cost);
-						upg_wpn = zm_weapons::get_upgrade_weapon(wpn_to_buy);
-						upg_wpn = zm_weapons::get_weapon_with_attachments(upg_wpn);
-						zm_weapons::ammo_give(upg_wpn);
-						//PLAY SOUND
-					}else{
-						//PLAY DENY SOUND
-					}
-				}else{
-					//player has base weapon
-					cost = zm_weapons::get_ammo_cost(wpn_to_buy);
-					if(canBuy(cost)){
-						player zm_score::minus_to_player_score(cost);
-						_wpn = zm_weapons::get_weapon_with_attachments(wpn_to_buy);
-						zm_weapons::ammo_give(_wpn);
-						//PLAY SOUND
-					}else{
-						//PLAY DENY SOUND
-					}
-				}
-			}else{
-				//else try to charge them for the wpn and give it to them
-				cost = zm_weapons::zm_weapons::weapon_give(wpn_to_buy);
-				if(canBuy(cost)){
-					player zm_score::minus_to_player_score(cost);
-					zm_weapons::weapon_give
-				}
-			}*/
-			
 		}else{
 			//currently on perk
 			self thread progPerkWaitFor();
