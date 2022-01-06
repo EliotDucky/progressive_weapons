@@ -158,8 +158,11 @@ function nextTier(){
 		self thread progPerkWaitFor();
 		self thread progScrollWaitFor();
 		foreach(_p_ in GetPlayers()){
-			self updatePlayerHintStr(_p_);
-		}	
+			self thread updatePlayerHintStr(_p_);
+		}
+		if(isdefined(level.wallbuy_complete_func)){
+			self thread [[level.wallbuy_complete_func]]();
+		}
 	}else{
 		self.kills_rem = 0;
 	}
