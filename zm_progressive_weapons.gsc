@@ -43,7 +43,7 @@ function startup(){
 	remaining_kills = [];
 
 	//Setup of actual structs
-	for(i=0; i<weapon_names.size; i++){
+	for(i=0; i<weapon_names.size && isdefined(prog_trigs[i]); i++){
 		wpn = SpawnStruct();
 		wpn.tier = -1;
 		wpn.max_tier = weapon_names[i].size-1;
