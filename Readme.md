@@ -13,7 +13,7 @@ This section will describe this script's application to Celerium, a zombies leve
 - The second line states the cost for ammunition for both the standard weapon and upgraded variant obtained through the pack-a-punch machine.
 - The third line communicates how many kills are required from the weapon before the next tier of weapon at this location is available for purchase.
 
-```c
+```gsc
 hs1 = "Press ^3[{+activate}]^7 for ^5" +_name+ "^7 Cost: ^1" +wpn_cost+ "^7 ";
 hs2 = "\n Ammo Cost: ^1 " +ammo_cost+ "^7 Upgraded Ammo ^1" +up_ammo_cost+ "^7 ";
 hs3 = "\n Total Kills For Next Tier: ^1" +self.kills_rem+ "^7 ";
@@ -47,7 +47,7 @@ self.trig SetHintString(hs1+hs2+hs3);
 - With this understood, how the values of the aforementioned variables are determined can be explained.
 - The costs are found from interacting with Treyarch's `zm_weapons` script which encapsulates the logic and calculation for us. All that is needed is the weapon to pass through - this is stored on the `self.weapons` array at the same index as the value of the current tier. This means that the weapon costs and properties for the level can be set up in the standard way.
 
-```c
+```gsc
 self.kills_rem = Int(self.kills_req[self.tier]);
 wpn_cost = zm_weapons::get_weapon_cost(self.weapons[self.tier]);
 ammo_cost = zm_weapons::get_ammo_cost(self.weapons[self.tier]);
@@ -59,7 +59,7 @@ _name = MakeLocalizedString(_name);
 - The localisation function obtains the display name for the weapon depending on the player's language.
 - In case one or more of these are not defined for the weapon elsewhere in the map's setup - for example if a level is being rapidly prototyped - defaults are set before these values are read in the hintstring.
 
-```c
+```gsc
 if(!isdefined(self.kills_rem))
  self.kills_rem = 20;
 if(!isdefined(wpn_cost))
@@ -76,7 +76,7 @@ if(!isdefined(_name))
 
 - To track the weapon kills, a function tracking this is added to callbacks for the zombies and dogs encountered as the AI enemies in Celerium. The dog AI script does not natively support death event callbacks in Black Ops III, so the zombie callback was used as a template to add this additional functionality to [`zm_ai_dogs`](https://github.com/EliotDucky/zm_ai_dogs).
 
-```c
+```gsc
 //Called On: Dead Enemy
 function trackProgWpnKills(player){
 	if(isdefined(self)){
@@ -122,7 +122,7 @@ function trackProgWpnKills(player){
 - This is simply handled by modulo operations on the tier the player has the wallbuy hintstring showing.
 - Modulo operations do not work on negative numbers however, so if the `prog_index` (`player.prog_indecies[self.loc]`) becomes negative after subtracting, it simply loops back to the index of the max tier - the perk reward.
 
-```c
+```gsc
 //Call On: level.prog_weapons[i] Struct
 function checkActionSlots(player){
 	if(player ActionSlotOneButtonPressed()){
@@ -148,7 +148,7 @@ function checkActionSlots(player){
  - Whether the player can buy it depends on what they're also doing at the same time, whether a perk is being drank, they're reviving someone, and doesn't have a deployable weapon out. This is handled in the `canBuy(cost)` function.
  - Communicating to the player whether this has recorded their input is important and so is following the standard for purchased utilites. The `denyPurchase(purchase_loc_)` function plays sound effects and voice over - using the universal system such that any character setup for any level will still work.
 
-```c
+```gsc
 function wpnBuyHandling(_wpn, p, cost, cost_ammo, cost_up_ammo){
 	if(p zm_weapons::has_weapon_or_upgrade(_wpn)){
 		to_charge = cost_ammo;
@@ -228,7 +228,7 @@ function denyPurchase(purchase_loc){
 
 
 - mapname.zone:
-```php
+```gsc
 //Progressive Wallbuys
 scriptparsetree,scripts/zm/progressive_weapons/zm_progressive_weapons.gsc
 scriptparsetree,scripts/zm/_zm_ai_dogs.gsc
