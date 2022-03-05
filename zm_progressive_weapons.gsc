@@ -172,7 +172,7 @@ function progWaitForBuy(cost, cost_ammo, cost_up_ammo){
 	_tier = self.tier;
 	while(true){
 		self.trig waittill("trigger", p);
-		//ADD SND FX, WPN VOX,
+		//ADD SND FX,
 		if(_tier != self.tier){
 			return;
 		}
@@ -194,7 +194,6 @@ function wpnBuyHandling(_wpn, p, cost, cost_ammo, cost_up_ammo){
 	}else{
 			to_charge = cost;
 			give_func = &zm_weapons::weapon_give;
-			_vox = undefined; //ASK CONNOR - both for player character and demonic announcer
 		}
 	if(p canBuy(to_charge)){
 		p zm_score::minus_to_player_score(to_charge);
@@ -204,7 +203,6 @@ function wpnBuyHandling(_wpn, p, cost, cost_ammo, cost_up_ammo){
 		}
 
 		wait(0.5);
-		//DO VOX
 	}else{
 		p denyPurchase(self.trig.origin);
 		//PLAY character point shortage vox & announcer deny
@@ -315,6 +313,7 @@ function progPerkWaitFor(){
 			//wait(1);
 			//p zm_perks::perk_give_bottle_end(orig, self.perk);
 			p zm_perks::give_perk(self.perk, false);
+			//perk vox & sound fx
 		}
 	}
 }
