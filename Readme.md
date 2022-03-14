@@ -38,6 +38,7 @@ self.trig SetHintString(hs1+hs2+hs3);
 | kills_rem | Number of kills remaining on the current tier                         |
 | tier      | Number of the current tier on this progressive wallbuy                |
 | max_tier  | The tier at which a perk is unlocked                                  |
+| model 		| The `script_model` representing the current weapon 										|
 
 - A struct allows multiple properties to be stored on it, much like a class in object oriented programming.
 - Most functions are called on this struct, meaning that, for example, the kills required for the wallbuy can be accused by `self.kills_req`.
@@ -225,6 +226,8 @@ function denyPurchase(purchase_loc){
   - For each perk which can be obtained from a progressive wallbuy, add the function call:
     `prog_weapons::addPerkName(code_name, display_name);`
     - for example: `prog_weapons::addPerkName("specialty_deadshot", "Deadshot Daiquiri");`
+- APE:
+	- Setup a preview model, with digital materials, for each weapon with the name `prog_wpn_[weapon_name]` without the `_zm` suffix
 
 
 - mapname.zone:

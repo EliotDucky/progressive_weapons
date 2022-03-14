@@ -14,6 +14,8 @@
 
 #insert scripts\shared\shared.gsh;
 
+#precache("model", "wpn_t7_zmb_perk_bottle_world");
+
 #namespace prog_weapons;
 
 REGISTER_SYSTEM("zm_progressive_weapons", &startup, undefined)
@@ -57,6 +59,12 @@ function startup(){
 		wpn.trig SetHintString("");
 		wpn.perk = weapon_names[i][wpn.max_tier];
 		wpn.weapons = [];
+		model_loc = GetEnt(prog_trigs[i].target, "targetname");
+		if(isdefined(model_loc)){
+			wpn.model = Spawn("script_model", model_loc.origin);
+			wpn.model.angles = model_loc.angles;
+			wpn.model SetModel("tag_origin");
+		}
 		for(j=0; j<wpn.max_tier; j++){
 			wpn.weapons[j] = GetWeapon(wpn.names[j]);
 		}
@@ -80,6 +88,7 @@ level.prog_weapons[i] Struct
 	.kills_rem 		Number of kills remaining on the current tier
 	.tier 			The number of the current tier on this prog wpn
 	.max_tier 		The tier at which a perk is unlocked
+	.model 			The spawned model to show the weapon on
 */
 
 //Called On: Dead Enemy
@@ -141,6 +150,11 @@ function nextTier(){
 		self.trig SetHintString(hs1+hs2+hs3);
 		//self.trig SetCursorHint("HINT_WEAPON", self.weapons[self.tier]);
 		self thread progWaitForBuy(wpn_cost, ammo_cost, up_ammo_cost);
+
+		//model
+		if(isdefined(self.model)){
+			self.model SetModel("prog_wpn_"+self.names[self.tier]);
+		}
 	}else if(self.tier == self.max_tier){
 		//play max tier sound
 		level thread zm_utility::really_play_2D_sound("prog_wpn_max_tier");
@@ -159,6 +173,10 @@ function nextTier(){
 		}
 		if(isdefined(level.wallbuy_complete_func)){
 			self thread [[level.wallbuy_complete_func]]();
+		}
+
+		if(isdefined(self.model)){
+			self.model SetModel("wpn_t7_zmb_perk_bottle_world");
 		}
 	}else{
 		self.kills_rem = 0;
