@@ -14,7 +14,7 @@
 
 #insert scripts\shared\shared.gsh;
 
-#precache("model", "wpn_t7_zmb_perk_bottle_world");
+#precache("model", "prog_wpn_perk_bottle");
 
 #namespace prog_weapons;
 
@@ -69,6 +69,7 @@ function startup(){
 			wpn.weapons[j] = GetWeapon(wpn.names[j]);
 		}
 		wpn.kills_rem = -1;
+		wpn.delta = (0, 0, 0);
 		level.prog_weapons[i] = wpn;
 	}
 	wait(0.05);
@@ -89,6 +90,7 @@ level.prog_weapons[i] Struct
 	.tier 			The number of the current tier on this prog wpn
 	.max_tier 		The tier at which a perk is unlocked
 	.model 			The spawned model to show the weapon on
+	.delta 			Current origin change from original
 */
 
 //Called On: Dead Enemy
@@ -153,7 +155,13 @@ function nextTier(){
 
 		//model
 		if(isdefined(self.model)){
+			self.origin -= self.delta; //reset position
+			self.delta = (0, 0, 0);
 			self.model SetModel("prog_wpn_"+self.names[self.tier]);
+			if(isdefined(level.prog_wpn_deltas[self.names[self.tier]])){
+				self.delta = level.prog_wpn_deltas[self.names[self.tier]];
+				self.model.origin += self.delta;
+			}
 		}
 	}else if(self.tier == self.max_tier){
 		//play max tier sound
@@ -176,7 +184,7 @@ function nextTier(){
 		}
 
 		if(isdefined(self.model)){
-			self.model SetModel("wpn_t7_zmb_perk_bottle_world");
+			self.model SetModel("prog_wpn_perk_bottle");
 		}
 	}else{
 		self.kills_rem = 0;
@@ -391,4 +399,10 @@ function addPerkName(code_name, display_name){
 		level.prog_perk_names = [];
 	}
 	level.prog_perk_names[code_name] = display_name;
+}
+
+//Adjust the position of this model
+function registerWeaponDelta(str_weapon, vector_delta){
+	DEFAULT(level.prog_wpn_deltas, array());
+	level.prog_wpn_deltas[str_weapon] = vector_delta;
 }
