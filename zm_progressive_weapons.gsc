@@ -109,7 +109,7 @@ function trackProgWpnKills(player){
 			counts |= zm_weapons::get_upgrade_weapon(wpn) === dmg_wpn;
 			if(counts){
 				level.prog_weapons[i].kills_rem--;
-				IPrintLnBold(level.prog_weapons[i].kills_rem);
+				//IPrintLnBold(level.prog_weapons[i].kills_rem);
 				if(wpn_struct.kills_rem <= 0){
 					wpn_struct nextTier();
 				}
@@ -320,7 +320,7 @@ function scrollBuyAttempt(){
 
 //Call On: level.prog_weapons[i] Struct
 function progPerkWaitFor(){
-	IPrintLnBold("waiting");
+	//IPrintLnBold("waiting");
 	self endon("death");
 	while(true){
 		self.trig waittill("trigger", p);
@@ -334,7 +334,7 @@ function progPerkWaitFor(){
 				p denyPurchase(self.trig.origin);
 			}
 		}else{
-			IPrintLnBold("no_perk");
+			//IPrintLnBold("no_perk");
 			//orig = p zm_perks::perk_give_bottle_begin(self.perk);
 			//wait(1);
 			//p zm_perks::perk_give_bottle_end(orig, self.perk);
