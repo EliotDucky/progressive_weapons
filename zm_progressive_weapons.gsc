@@ -218,9 +218,15 @@ function wpnBuyHandling(_wpn, p, cost, cost_ammo, cost_up_ammo){
 			//ADD UPGRADED
 		}
 	}else{
-			to_charge = cost;
-			give_func = &zm_weapons::weapon_give;
+		to_charge = cost;
+		give_func = &zm_weapons::weapon_give;
+		if(_wpn.name == "ray_gun" || _wpn.name == "raygun_mark2"){
+			if(self zm_weapons::has_weapon_or_upgrade(GetWeapon("raygun_mark2"))
+				|| self zm_weapons::has_weapon_or_upgrade(GetWeapon("ray_gun"))){
+				give_func = &rayGunBuyHandling;
+			}
 		}
+	}
 	if(p canBuy(to_charge)){
 		p zm_score::minus_to_player_score(to_charge);
 		zm_utility::play_sound_at_pos("purchase", self.trig.origin);
@@ -233,6 +239,35 @@ function wpnBuyHandling(_wpn, p, cost, cost_ammo, cost_up_ammo){
 		p denyPurchase(self.trig.origin);
 		//PLAY character point shortage vox & announcer deny
 	}
+}
+
+//Call On: player
+function rayGunBuyHandling(weapon){
+	wpns = self GetWeaponsListPrimaries();
+	if(weapon.name == "ray_gun"){
+		if(self zm_weapons::has_weapon_or_upgrade(GetWeapon("raygun_mark2"))){
+			foreach(wpn in wpns){
+				if(IsSubStr(wpn.name, "raygun_mark2")){
+					self zm_weapons::weapon_take(wpn);
+				}
+			}
+		}
+	}else if(weapon.name == "raygun_mark2"){
+		if(self zm_weapons::has_weapon_or_upgrade(GetWeapon("ray_gun"))){
+			foreach(wpn in wpns){
+				if(IsSubStr(wpn.name, "ray_gun")){
+					self zm_weapons::weapon_take(wpn);
+				}
+			}
+		}
+	}
+
+	weapon = self zm_weapons::give_build_kit_weapon(weapon);
+	self notify("weapon_give", weapon);
+
+	self GiveStartAmmo(weapon);
+	self SwitchToWeapon(weapon);
+	return weapon;
 }
 
 //Call On: level.prog_weapons[i] Struct
