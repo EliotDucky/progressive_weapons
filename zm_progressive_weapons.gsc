@@ -221,8 +221,8 @@ function wpnBuyHandling(_wpn, p, cost, cost_ammo, cost_up_ammo){
 		to_charge = cost;
 		give_func = &zm_weapons::weapon_give;
 		if(_wpn.name == "ray_gun" || _wpn.name == "raygun_mark2"){
-			if(self zm_weapons::has_weapon_or_upgrade(GetWeapon("raygun_mark2"))
-				|| self zm_weapons::has_weapon_or_upgrade(GetWeapon("ray_gun"))){
+			if(p zm_weapons::has_weapon_or_upgrade(GetWeapon("raygun_mark2"))
+				|| p zm_weapons::has_weapon_or_upgrade(GetWeapon("ray_gun"))){
 				give_func = &rayGunBuyHandling;
 			}
 		}
