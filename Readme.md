@@ -238,8 +238,6 @@ function denyPurchase(purchase_loc){
 //Progressive Wallbuys
 scriptparsetree,scripts/zm/progressive_weapons/zm_progressive_weapons.gsc
 scriptparsetree,scripts/zm/_zm_ai_dogs.gsc
-scriptparsetree,scripts/zm/_zm_powerups.gsc
-scriptparsetree,scripts/zm/_zm_spawner.gsc
 stringtable,gamedata/weapons/prog_wallbuys.csv
 stringtable,gamedata/weapons/prog_kills.csv
 ```
