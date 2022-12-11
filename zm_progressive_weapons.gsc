@@ -27,6 +27,8 @@ function startup(){
 	if(isdefined(level.dog_rounds_enabled) && level.dog_rounds_enabled || isdefined(level.dogs_enabled) && level.dogs_enabled){
 		zm_ai_dogs::register_dog_death_event_callback(&trackProgWpnKills);
 	}
+	//Instakill tracking
+	level.check_for_instakill_override = &trackProgWpnKills;
 
 	//The weapon structs
 	level.prog_weapons = [];
@@ -116,6 +118,7 @@ function trackProgWpnKills(player){
 			}
 		}
 	}
+	return true;
 }
 
 //Call On: a level.prog_weapons[i] Struct
