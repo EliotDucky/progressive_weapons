@@ -3,13 +3,14 @@
 #using scripts\shared\array_shared;
 #using scripts\shared\flag_shared;
 
+#using scripts\zm\_zm_audio;
 #using scripts\zm\_zm_spawner;
 #using scripts\zm\_zm_ai_dogs;
 #using scripts\zm\_zm_score;
 #using scripts\zm\_zm_perks;
-#using scripts\zm\_zm_weapons;
+#using scripts\zm\_zm_powerups;
 #using scripts\zm\_zm_score;
-#using scripts\zm\_zm_audio;
+#using scripts\zm\_zm_weapons;
 #using scripts\zm\_zm_utility;
 
 #insert scripts\shared\shared.gsh;
@@ -118,7 +119,7 @@ function trackProgWpnKills(player){
 			}
 		}
 	}
-	return true;
+	return player zm_powerups::is_insta_kill_active();
 }
 
 //Call On: a level.prog_weapons[i] Struct
