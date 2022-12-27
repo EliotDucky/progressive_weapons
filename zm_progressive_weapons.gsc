@@ -16,6 +16,7 @@
 #insert scripts\shared\shared.gsh;
 
 #precache("model", "prog_wpn_perk_bottle");
+#precache("eventstring", "zombie_notification");
 
 #namespace prog_weapons;
 
@@ -29,7 +30,7 @@ function startup(){
 		zm_ai_dogs::register_dog_death_event_callback(&trackProgWpnKills);
 	}
 	//Instakill tracking
-	level.check_for_instakill_override = &trackProgWpnKills;
+	level.check_for_instakill_override = &instakillWrapper;
 
 	//The weapon structs
 	level.prog_weapons = [];
@@ -119,7 +120,15 @@ function trackProgWpnKills(player){
 			}
 		}
 	}
-	return player zm_powerups::is_insta_kill_active();
+	
+}
+
+function instakillWrapper(player){
+	b_kill = player zm_powerups::is_insta_kill_active();
+	if(b_kill){
+		trackProgWpnKills(player);
+	}
+	return b_kill;
 }
 
 //Call On: a level.prog_weapons[i] Struct
