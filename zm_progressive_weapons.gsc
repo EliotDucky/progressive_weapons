@@ -17,6 +17,7 @@
 
 #precache("model", "prog_wpn_perk_bottle");
 #precache("eventstring", "zombie_notification");
+#precache("string", "DF_PROG_RANK");
 
 #namespace prog_weapons;
 
@@ -140,6 +141,7 @@ function nextTier(){
 			level thread zm_utility::really_play_2D_sound("prog_wpn_tier_up");
 		}
 		
+		LUINotifyEvent(&"zombie_notification", 1, &"DF_PROG_RANK");
 
 		self.kills_rem = Int(self.kills_req[self.tier]);
 		wpn_cost = zm_weapons::get_weapon_cost(self.weapons[self.tier]);
