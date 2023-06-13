@@ -139,9 +139,8 @@ function nextTier(){
 		//play tier up sound
 		if(self.tier != 0){
 			level thread zm_utility::really_play_2D_sound("prog_wpn_tier_up");
+			LUINotifyEvent(&"zombie_notification", 1, &"DF_PROG_RANK");
 		}
-		
-		LUINotifyEvent(&"zombie_notification", 1, &"DF_PROG_RANK");
 
 		self.kills_rem = Int(self.kills_req[self.tier]);
 		wpn_cost = zm_weapons::get_weapon_cost(self.weapons[self.tier]);
