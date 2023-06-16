@@ -143,28 +143,13 @@ function nextTier(){
 		}
 
 		self.kills_rem = Int(self.kills_req[self.tier]);
+		DEFAULT(self.kills_rem, 20);
+
 		wpn_cost = zm_weapons::get_weapon_cost(self.weapons[self.tier]);
 		ammo_cost = zm_weapons::get_ammo_cost(self.weapons[self.tier]);
-		up_ammo_cost =  zm_weapons::get_upgraded_ammo_cost(self.weapons[self.tier]);
-		_name = self.weapons[self.tier].displayname;
-		_name = MakeLocalizedString(_name);
-		//Define catching
-		if(!isdefined(self.kills_rem))
-			self.kills_rem = 20;
-		if(!isdefined(wpn_cost))
-			wpn_cost = 2000;
-		if(!isdefined(ammo_cost))
-			ammo_cost = wpn_cost/2;
-		if(!isdefined(up_ammo_cost))
-			up_ammo_cost = 4500;
-		if(!isdefined(_name))
-			_name = "Misc.";
+		up_ammo_cost = zm_weapons::get_upgraded_ammo_cost(self.weapons[self.tier]);
 
-		hs1 = "Press ^3[{+activate}]^7 for ^5" +_name+ "^7 Cost: ^1" +wpn_cost+ "^7 ";
-		hs2 = "\n Ammo Cost: ^1 " +ammo_cost+ "^7 Upgraded Ammo ^1" +up_ammo_cost+ "^7 ";
-		hs3 = "\n Total Kills For Next Tier: ^1" +self.kills_rem+ "^7 ";
-		self.trig SetHintString(hs1+hs2+hs3);
-		//self.trig SetCursorHint("HINT_WEAPON", self.weapons[self.tier]);
+		self updateHintStr(wpn_cost, ammo_cost, up_ammo_cost);
 		self thread progWaitForBuy(wpn_cost, ammo_cost, up_ammo_cost);
 
 		//model
@@ -206,9 +191,28 @@ function nextTier(){
 }
 
 //Call On: level.prog_weapons[i] Struct
+function updateHintStr(wpn_cost, ammo_cost, up_ammo_cost){
+	DEFAULT(wpn_cost, zm_weapons::get_weapon_cost(self.weapons[self.tier]));
+	DEFAULT(ammo_cost, zm_weapons::get_ammo_cost(self.weapons[self.tier]));
+	DEFAULT(up_ammo_cost, zm_weapons::get_upgraded_ammo_cost(self.weapons[self.tier]));
+	_name = self.weapons[self.tier].displayname;
+	_name = MakeLocalizedString(_name);
+	
+	//Define catching
+	DEFAULT(wpn_cost, 2000);
+	DEFAULT(ammo_cost, wpn_cost/2);
+	DEFAULT(up_ammo_cost, 4500);
+	DEFAULT(_name, "Misc.");
+
+	hs1 = "Press ^3[{+activate}]^7 for ^5" +_name+ "^7 Cost: ^1" +wpn_cost+ "^7 ";
+	hs2 = "\n Ammo Cost: ^1 " +ammo_cost+ "^7 Upgraded Ammo ^1" +up_ammo_cost+ "^7 ";
+	hs3 = "\n Total Kills For Next Tier: ^1" +self.kills_rem+ "^7 ";
+	self.trig SetHintString(hs1+hs2+hs3);
+}
+
+//Call On: level.prog_weapons[i] Struct
 function progWaitForBuy(cost, cost_ammo, cost_up_ammo){
 	level endon("death");
-	_wpn = self.weapons[self.tier];
 	_tier = self.tier;
 	while(true){
 		self.trig waittill("trigger", p);
@@ -217,6 +221,7 @@ function progWaitForBuy(cost, cost_ammo, cost_up_ammo){
 			return;
 		}
 
+		_wpn = self.weapons[_tier];
 		self wpnBuyHandling(_wpn, p, cost, cost_ammo, cost_up_ammo);
 	}
 }
